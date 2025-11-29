@@ -1,3 +1,4 @@
+import { Colours } from "@/constants/consts";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
@@ -8,7 +9,7 @@ export default function RootLayout() {
 		<>
 			<StatusBar style="light" />
 			<SafeAreaProvider>
-				<Stack screenOptions={{ headerShown: false }}>
+				<Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colours.background } }}>
 					<Stack.Screen name="(pages)" />
 				</Stack>
 			</SafeAreaProvider>

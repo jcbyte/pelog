@@ -1,103 +1,238 @@
-import { Text } from "react-native";
+import { Colours, MAX_DAYS } from "@/constants/consts";
+import { useRouter } from "expo-router";
+import { ArrowLeft } from "lucide-react-native";
+import { useState } from "react";
+import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+
+export interface PE {
+	P: number;
+	E: number;
+}
 
 export default function ConfigPage() {
+	const router = useRouter();
+
+	const [selectedDay, setSelectedDay] = useState<number | null>(null);
+	const [drawerP, setDrawerP] = useState<string>("");
+	const [drawerE, setDrawerE] = useState<string>("");
+
+	const [peLog, setPeLog] = useState<PE[]>(Array(MAX_DAYS).fill({ P: 0, E: 0 }));
+
 	return (
-		<Text style={{ color: "#fff" }}>Hello World</Text>
-		// <ParallaxScrollView
-		// 	headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-		// 	headerImage={
-		// 		<IconSymbol
-		// 			size={310}
-		// 			color="#808080"
-		// 			name="chevron.left.forwardslash.chevron.right"
-		// 			style={styles.headerImage}
-		// 		/>
-		// 	}
-		// >
-		// 	<ThemedView style={styles.titleContainer}>
-		// 		<ThemedText
-		// 			type="title"
-		// 			style={{
-		// 				fontFamily: Fonts.rounded,
-		// 			}}
-		// 		>
-		// 			Explore
-		// 		</ThemedText>
-		// 	</ThemedView>
-		// 	<ThemedText>This app includes example code to help you get started.</ThemedText>
-		// 	<Collapsible title="File-based routing">
-		// 		<ThemedText>
-		// 			This app has two screens: <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{" "}
-		// 			<ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-		// 		</ThemedText>
-		// 		<ThemedText>
-		// 			The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText> sets up the tab
-		// 			navigator.
-		// 		</ThemedText>
-		// 		<ExternalLink href="https://docs.expo.dev/router/introduction">
-		// 			<ThemedText type="link">Learn more</ThemedText>
-		// 		</ExternalLink>
-		// 	</Collapsible>
-		// 	<Collapsible title="Android, iOS, and web support">
-		// 		<ThemedText>
-		// 			You can open this project on Android, iOS, and the web. To open the web version, press{" "}
-		// 			<ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-		// 		</ThemedText>
-		// 	</Collapsible>
-		// 	<Collapsible title="Images">
-		// 		<ThemedText>
-		// 			For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{" "}
-		// 			<ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for different screen densities
-		// 		</ThemedText>
-		// 		<Image
-		// 			source={require("@/assets/images/react-logo.png")}
-		// 			style={{ width: 100, height: 100, alignSelf: "center" }}
-		// 		/>
-		// 		<ExternalLink href="https://reactnative.dev/docs/images">
-		// 			<ThemedText type="link">Learn more</ThemedText>
-		// 		</ExternalLink>
-		// 	</Collapsible>
-		// 	<Collapsible title="Light and dark mode components">
-		// 		<ThemedText>
-		// 			This template has light and dark mode support. The{" "}
-		// 			<ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect what the user&apos;s
-		// 			current color scheme is, and so you can adjust UI colors accordingly.
-		// 		</ThemedText>
-		// 		<ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-		// 			<ThemedText type="link">Learn more</ThemedText>
-		// 		</ExternalLink>
-		// 	</Collapsible>
-		// 	<Collapsible title="Animations">
-		// 		<ThemedText>
-		// 			This template includes an example of an animated component. The{" "}
-		// 			<ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses the powerful{" "}
-		// 			<ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-		// 				react-native-reanimated
-		// 			</ThemedText>{" "}
-		// 			library to create a waving hand animation.
-		// 		</ThemedText>
-		// 		{Platform.select({
-		// 			ios: (
-		// 				<ThemedText>
-		// 					The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText> component provides a
-		// 					parallax effect for the header image.
-		// 				</ThemedText>
-		// 			),
-		// 		})}
-		// 	</Collapsible>
-		// </ParallaxScrollView>
+		<View style={styles.container}>
+			<View style={styles.header}>
+				<TouchableOpacity style={styles.settingsButton} onPress={() => router.back()}>
+					<ArrowLeft color={Colours.text} size={24} />
+				</TouchableOpacity>
+				<Text style={styles.headerTitle}>Day Configuration</Text>
+			</View>
+
+			<ScrollView style={styles.mainContent}>
+				<View style={styles.dayGrid}>
+					{peLog.map((pe, day) => {
+						return (
+							<TouchableOpacity key={day} onPress={() => setSelectedDay(day)} style={styles.dayButton}>
+								<Text style={styles.dayText}>{day + 1}</Text>
+								<Text style={styles.dayConfigText}>
+									P {pe.P}, E {pe.E}
+								</Text>
+							</TouchableOpacity>
+						);
+					})}
+				</View>
+			</ScrollView>
+
+			<Modal
+				visible={selectedDay !== null}
+				animationType="slide"
+				transparent={true}
+				onRequestClose={() => setSelectedDay(null)}
+			>
+				<View style={styles.modalOverlay}>
+					<View style={styles.drawerContent}>
+						<View style={styles.drawerHeader}>
+							<Text style={styles.drawerTitle}>Day {selectedDay}</Text>
+							<Text style={styles.drawerDescription}>Set P and E values for this day</Text>
+						</View>
+
+						<View style={styles.drawerBody}>
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>P Value</Text>
+								<TextInput
+									style={styles.input}
+									placeholderTextColor={Colours.muted}
+									keyboardType="numeric"
+									value={drawerP}
+									onChangeText={(text) => setDrawerP(text)}
+									textAlign="center"
+									placeholder="0"
+								/>
+							</View>
+
+							<View style={styles.inputGroup}>
+								<Text style={styles.inputLabel}>E Value</Text>
+								<TextInput
+									style={styles.input}
+									placeholderTextColor={Colours.muted}
+									keyboardType="numeric"
+									value={drawerE}
+									onChangeText={(text) => setDrawerE(text)}
+									textAlign="center"
+									placeholder="0"
+								/>
+							</View>
+						</View>
+
+						<View style={styles.drawerFooter}>
+							<TouchableOpacity style={styles.primaryButton} onPress={() => {}}>
+								<Text style={styles.primaryButtonText}>Save Day {selectedDay}</Text>
+							</TouchableOpacity>
+							<TouchableOpacity style={styles.cancelButton} onPress={() => setSelectedDay(null)}>
+								<Text style={styles.cancelButtonText}>Cancel</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			</Modal>
+		</View>
 	);
 }
 
-// const styles = StyleSheet.create({
-// 	headerImage: {
-// 		color: "#808080",
-// 		bottom: -90,
-// 		left: -35,
-// 		position: "absolute",
-// 	},
-// 	titleContainer: {
-// 		flexDirection: "row",
-// 		gap: 8,
-// 	},
-// });
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+
+	header: {
+		paddingHorizontal: 16,
+		paddingVertical: 8,
+		flexDirection: "row",
+		alignItems: "center",
+		borderBottomWidth: 1,
+		borderBottomColor: Colours.divider,
+	},
+	headerTitle: {
+		fontSize: 18,
+		fontWeight: "600",
+		color: Colours.text,
+	},
+	settingsButton: {
+		padding: 8,
+	},
+
+	mainContent: {
+		flex: 1,
+		padding: 24,
+	},
+	dayGrid: {
+		flexDirection: "row",
+		flexWrap: "wrap",
+		justifyContent: "center",
+		gap: 6,
+		alignSelf: "center",
+	},
+	dayButton: {
+		width: 80,
+		padding: 16,
+		borderRadius: 8,
+		borderWidth: 1,
+		backgroundColor: "transparent",
+		borderColor: Colours.divider,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	dayText: {
+		fontSize: 20,
+		fontWeight: "600",
+		color: Colours.text,
+	},
+	dayConfigText: {
+		fontSize: 10,
+		color: Colours.muted,
+		fontWeight: "500",
+	},
+
+	modalOverlay: {
+		flex: 1,
+		justifyContent: "flex-end",
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
+	},
+	drawerContent: {
+		backgroundColor: Colours.background,
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
+		paddingHorizontal: 20,
+		paddingTop: 16,
+		paddingBottom: 0,
+		width: "100%",
+		maxHeight: "80%",
+	},
+	drawerHeader: {
+		paddingVertical: 10,
+		alignItems: "center",
+	},
+	drawerTitle: {
+		fontSize: 24,
+		fontWeight: "bold",
+		color: Colours.text,
+	},
+	drawerDescription: {
+		color: Colours.muted,
+		marginTop: 4,
+	},
+	drawerBody: {
+		paddingVertical: 24,
+		gap: 8,
+	},
+	inputGroup: {
+		gap: 4,
+	},
+	inputLabel: {
+		fontSize: 14,
+		fontWeight: "500",
+		color: Colours.text,
+	},
+	input: {
+		height: 56,
+		fontSize: 18,
+		borderWidth: 1,
+		borderColor: Colours.divider,
+		borderRadius: 8,
+		paddingHorizontal: 12,
+		backgroundColor: Colours.background,
+		color: Colours.text,
+	},
+	drawerFooter: {
+		paddingTop: 16,
+		paddingBottom: 30,
+		borderTopWidth: 1,
+		borderTopColor: Colours.divider,
+		gap: 8,
+	},
+	primaryButton: {
+		backgroundColor: Colours.primary,
+		borderRadius: 8,
+		padding: 15,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	primaryButtonText: {
+		color: Colours.text,
+		fontSize: 16,
+		fontWeight: "600",
+	},
+	cancelButton: {
+		borderColor: Colours.divider,
+		borderWidth: 1,
+		borderRadius: 8,
+		padding: 15,
+		backgroundColor: "transparent",
+		alignItems: "center",
+	},
+	cancelButtonText: {
+		color: Colours.text,
+		fontSize: 16,
+		fontWeight: "600",
+	},
+});

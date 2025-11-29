@@ -9,7 +9,7 @@ export default function CounterPage() {
 	const insets = useSafeAreaInsets();
 	const router = useRouter();
 
-	const [currentDay, setCurrentDay] = useState(1);
+	const [currentDay, setCurrentDay] = useState<number>(1);
 
 	function increment() {
 		if (currentDay < 28) {
@@ -30,7 +30,7 @@ export default function CounterPage() {
 	return (
 		<View style={{ ...styles.container }}>
 			<View style={styles.header}>
-				<Text style={{ ...styles.headerTitle }}>Day Counter</Text>
+				<Text style={styles.headerTitle}>Day Counter</Text>
 				<TouchableOpacity style={styles.settingsButton} onPress={() => router.push("/config")}>
 					<Settings color={Colours.text} size={24} />
 				</TouchableOpacity>
@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
 		padding: 8,
 	},
 
-	// Main Content Styles
 	main: {
 		flex: 1,
 		alignItems: "center",
