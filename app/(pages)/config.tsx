@@ -1,18 +1,14 @@
-import { Colours, MAX_DAYS } from "@/constants/consts";
+import { Colours } from "@/constants/constants";
+import { usePeLog } from "@/hooks/usePeLog";
 import { useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import { useState } from "react";
 import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-export interface PE {
-	P: number;
-	E: number;
-}
-
 export default function ConfigPage() {
 	const router = useRouter();
 
-	const [peLog, setPeLog] = useState<PE[]>(Array(MAX_DAYS).fill({ P: 0, E: 0 }));
+	const { peLog, setPeLog } = usePeLog();
 	const [selectedDay, setSelectedDay] = useState<number | null>(null);
 	const [drawerP, setDrawerP] = useState<string>("");
 	const [drawerE, setDrawerE] = useState<string>("");
