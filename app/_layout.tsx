@@ -1,4 +1,4 @@
-import { Colours } from "@/constants/consts";
+import { Colours } from "@/constants/constants";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";

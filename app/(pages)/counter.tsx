@@ -1,4 +1,4 @@
-import { Colours, MAX_DAYS } from "@/constants/consts";
+import { Colours, MAX_DAYS } from "@/constants/constants";
 import { useRouter } from "expo-router";
 import { Minus, Plus, RotateCcw, Settings } from "lucide-react-native";
 import React, { useState } from "react";

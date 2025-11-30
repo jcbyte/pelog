@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import React from "react";
 
-import { Colours } from "@/constants/consts";
+import { Colours } from "@/constants/constants";
 
 export default function StackLayout() {
 	return (
