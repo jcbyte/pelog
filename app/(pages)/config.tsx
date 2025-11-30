@@ -12,11 +12,32 @@ export interface PE {
 export default function ConfigPage() {
 	const router = useRouter();
 
+	const [peLog, setPeLog] = useState<PE[]>(Array(MAX_DAYS).fill({ P: 0, E: 0 }));
 	const [selectedDay, setSelectedDay] = useState<number | null>(null);
 	const [drawerP, setDrawerP] = useState<string>("");
 	const [drawerE, setDrawerE] = useState<string>("");
 
-	const [peLog, setPeLog] = useState<PE[]>(Array(MAX_DAYS).fill({ P: 0, E: 0 }));
+	function openDrawer(day: number) {
+		setSelectedDay(day);
+		setDrawerP(String(peLog[day].P));
+		setDrawerE(String(peLog[day].E));
+	}
+
+	function closeDrawer() {
+		setSelectedDay(null);
+	}
+
+	function savePe() {
+		if (!selectedDay) return;
+
+		setPeLog((prev) => {
+			const newPeLog = [...prev];
+			newPeLog[selectedDay] = { P: Number(drawerP), E: Number(drawerE) };
+			return newPeLog;
+		});
+
+		closeDrawer();
+	}
 
 	return (
 		<View style={styles.container}>
@@ -31,23 +52,17 @@ export default function ConfigPage() {
 				<View style={styles.dayGrid}>
 					{peLog.map((pe, day) => {
 						return (
-							<TouchableOpacity key={day} onPress={() => setSelectedDay(day)} style={styles.dayButton}>
+							<TouchableOpacity key={day} onPress={() => openDrawer(day)} style={styles.dayButton}>
 								<Text style={styles.dayText}>{day + 1}</Text>
-								<Text style={styles.dayConfigText}>
-									P {pe.P}, E {pe.E}
-								</Text>
+								<Text style={styles.dayConfigText}>P={pe.P}%</Text>
+								<Text style={styles.dayConfigText}>E={pe.E}%</Text>
 							</TouchableOpacity>
 						);
 					})}
 				</View>
 			</ScrollView>
 
-			<Modal
-				visible={selectedDay !== null}
-				animationType="slide"
-				transparent={true}
-				onRequestClose={() => setSelectedDay(null)}
-			>
+			<Modal visible={selectedDay !== null} animationType="slide" transparent={true} onRequestClose={closeDrawer}>
 				<View style={styles.modalOverlay}>
 					<View style={styles.drawerContent}>
 						<View style={styles.drawerHeader}>
@@ -57,7 +72,7 @@ export default function ConfigPage() {
 
 						<View style={styles.drawerBody}>
 							<View style={styles.inputGroup}>
-								<Text style={styles.inputLabel}>P Value</Text>
+								<Text style={styles.inputLabel}>P Value (%)</Text>
 								<TextInput
 									style={styles.input}
 									placeholderTextColor={Colours.muted}
@@ -70,7 +85,7 @@ export default function ConfigPage() {
 							</View>
 
 							<View style={styles.inputGroup}>
-								<Text style={styles.inputLabel}>E Value</Text>
+								<Text style={styles.inputLabel}>E Value (%)</Text>
 								<TextInput
 									style={styles.input}
 									placeholderTextColor={Colours.muted}
@@ -84,10 +99,10 @@ export default function ConfigPage() {
 						</View>
 
 						<View style={styles.drawerFooter}>
-							<TouchableOpacity style={styles.primaryButton} onPress={() => {}}>
+							<TouchableOpacity style={styles.primaryButton} onPress={savePe}>
 								<Text style={styles.primaryButtonText}>Save Day {selectedDay}</Text>
 							</TouchableOpacity>
-							<TouchableOpacity style={styles.cancelButton} onPress={() => setSelectedDay(null)}>
+							<TouchableOpacity style={styles.cancelButton} onPress={closeDrawer}>
 								<Text style={styles.cancelButtonText}>Cancel</Text>
 							</TouchableOpacity>
 						</View>
@@ -142,12 +157,13 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	dayText: {
-		fontSize: 20,
+		fontSize: 18,
 		fontWeight: "600",
 		color: Colours.text,
 	},
 	dayConfigText: {
-		fontSize: 10,
+		fontSize: 12,
+		lineHeight: 14,
 		color: Colours.muted,
 		fontWeight: "500",
 	},
