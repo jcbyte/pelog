@@ -11,8 +11,7 @@ export default function CounterPage() {
 	const router = useRouter();
 
 	const { startDate, setStartDate } = useAppData();
-	const currentDay = Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-	console.log(Date.now(), startDate.getTime());
+	const currentDay = Math.floor((Date.now() - startDate.getTime()) / DAY_MS) + 1;
 
 	function increment() {
 		if (currentDay < 28) {

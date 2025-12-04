@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
 import { MAX_DAYS } from "@/constants/constants";
+import { rescheduleNotifications } from "@/tools/notifications";
 
 const PE_LOG_KEY = "peLog" as const;
 const START_DATE_KEY = "startDate" as const;
@@ -35,6 +36,10 @@ export function useAppData() {
 			return newPeLog;
 		});
 	}
+
+	useEffect(() => {
+		rescheduleNotifications(startDate, peLog, 9);
+	}, [startDate, peLog]);
 
 	useEffect(() => {
 		if (!loaded) return;
