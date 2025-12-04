@@ -18,11 +18,12 @@ export function useAppData() {
 
 	useEffect(() => {
 		(async () => {
-			const retrievedPeLog = await AsyncStorage.getItem(PE_LOG_KEY);
-			if (retrievedPeLog) setPeLog(JSON.parse(retrievedPeLog));
 			const retrievedStartDate = await AsyncStorage.getItem(START_DATE_KEY);
 			if (retrievedStartDate) setStartDate(new Date(retrievedStartDate));
+			const retrievedPeLog = await AsyncStorage.getItem(PE_LOG_KEY);
+			if (retrievedPeLog) setPeLog(JSON.parse(retrievedPeLog));
 
+			// todo show splash screen until this is loaded
 			setLoaded(true);
 		})();
 	}, []);
@@ -36,10 +37,14 @@ export function useAppData() {
 	}
 
 	useEffect(() => {
-		AsyncStorage.setItem(START_DATE_KEY, JSON.stringify(startDate));
+		if (!loaded) return;
+
+		AsyncStorage.setItem(START_DATE_KEY, startDate.toISOString());
 	}, [startDate]);
 
 	useEffect(() => {
+		if (!loaded) return;
+
 		AsyncStorage.setItem(PE_LOG_KEY, JSON.stringify(peLog));
 	}, [peLog]);
 

@@ -1,7 +1,8 @@
-import { Colours, MAX_DAYS } from "@/constants/constants";
+import { Colours, DAY_MS, MAX_DAYS } from "@/constants/constants";
+import { useAppData } from "@/hooks/useAppData";
 import { useRouter } from "expo-router";
 import { Minus, Plus, RotateCcw, Settings } from "lucide-react-native";
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,22 +10,30 @@ export default function CounterPage() {
 	const insets = useSafeAreaInsets();
 	const router = useRouter();
 
-	const [currentDay, setCurrentDay] = useState<number>(1);
+	const { startDate, setStartDate } = useAppData();
+	const currentDay = Math.floor((Date.now() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+	console.log(Date.now(), startDate.getTime());
 
 	function increment() {
 		if (currentDay < 28) {
-			setCurrentDay((prev) => prev + 1);
+			setStartDate((prev) => {
+				return new Date(prev.getTime() - DAY_MS);
+			});
 		}
 	}
 
 	function decrement() {
 		if (currentDay > 1) {
-			setCurrentDay((prev) => prev - 1);
+			setStartDate((prev) => {
+				return new Date(prev.getTime() + DAY_MS);
+			});
 		}
 	}
 
 	function reset() {
-		setCurrentDay(1);
+		setStartDate((prev) => {
+			return new Date();
+		});
 	}
 
 	return (
