@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { MAX_DAYS } from "@/constants/consts";
 import { rescheduleNotifications } from "@/tools/notifications";
-import { strippedTime } from "@/tools/time";
+import { getClosestStartDate, strippedTime } from "@/tools/time";
 
 const START_DATE_KEY = "startDate" as const;
 const NOTIFICATION_TIME_KEY = "notificationTime" as const;
@@ -49,9 +49,19 @@ export function useAppData() {
 
 	useEffect(() => {
 		if (!loaded) return;
+		const newClosestStartDate = getClosestStartDate(startDate);
+		if (newClosestStartDate) setStartDate(newClosestStartDate);
+	}, [loaded]);
+
+	// Notification re-scheduler
+
+	useEffect(() => {
+		if (!loaded) return;
 
 		rescheduleNotifications({ startDate, peLog, notificationTime });
 	}, [startDate, peLog, notificationTime]);
+
+	// Localstorage callbacks
 
 	useEffect(() => {
 		if (!loaded) return;
