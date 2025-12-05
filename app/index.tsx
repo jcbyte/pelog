@@ -3,17 +3,20 @@ import { Colours } from "@/constants/theme";
 import { useAppData } from "@/hooks/useAppData";
 import { DAY_MS, getCurrentDay } from "@/tools/time";
 import { useRouter } from "expo-router";
-import { Minus, Plus, RotateCcw, Settings } from "lucide-react-native";
-import React from "react";
+import { AlarmClock, CalendarCog, Minus, Plus, RotateCcw } from "lucide-react-native";
+import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 
 export default function CounterPage() {
-	const insets = useSafeAreaInsets();
 	const router = useRouter();
 
-	const { startDate, setStartDate } = useAppData();
+	const { startDate, setStartDate, notificationTime, setNotificationTime } = useAppData();
 	const currentDay = getCurrentDay(startDate) + 1;
+
+	const [timePickerDate, setTimePickerDate] = useState<Date>(new Date());
+	const [timePickerShown, setTimePickerShown] = useState<boolean>(false);
 
 	function increment() {
 		if (currentDay < 28) {
@@ -39,13 +42,30 @@ export default function CounterPage() {
 		});
 	}
 
+	function selectNotificationTime() {
+		setTimePickerDate(new Date(notificationTime));
+		setTimePickerShown(true);
+	}
+
+	function confirmNotificationTime(_e: DateTimePickerEvent, date?: Date | undefined) {
+		setTimePickerShown(false);
+
+		if (!date) return;
+		setNotificationTime(date);
+	}
+
 	return (
 		<View style={{ ...styles.container }}>
 			<View style={styles.header}>
-				<Text style={styles.headerTitle}>Day Counter</Text>
-				<TouchableOpacity style={styles.settingsButton} onPress={() => router.push("/config")}>
-					<Settings color={Colours.text} size={24} />
-				</TouchableOpacity>
+				<Text style={styles.headerTitle}>PE Log</Text>
+				<View style={styles.headerButtons}>
+					<TouchableOpacity style={styles.settingsButton} onPress={selectNotificationTime}>
+						<AlarmClock color={Colours.text} size={24} />
+					</TouchableOpacity>
+					<TouchableOpacity style={styles.settingsButton} onPress={() => router.push("/config")}>
+						<CalendarCog color={Colours.text} size={24} />
+					</TouchableOpacity>
+				</View>
 			</View>
 
 			<View style={styles.main}>
@@ -82,6 +102,10 @@ export default function CounterPage() {
 					<Text style={styles.resetButtonText}>Reset to Day 1</Text>
 				</TouchableOpacity>
 			</View>
+
+			{timePickerShown && (
+				<DateTimePicker value={timePickerDate} mode="time" is24Hour={false} onChange={confirmNotificationTime} />
+			)}
 		</View>
 	);
 }
@@ -99,6 +123,10 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		borderBottomWidth: 1,
 		borderBottomColor: Colours.divider,
+	},
+	headerButtons: {
+		flexDirection: "row",
+		alignItems: "center",
 	},
 	headerTitle: {
 		fontSize: 18,
