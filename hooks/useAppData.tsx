@@ -24,7 +24,6 @@ export function useAppData() {
 			const retrievedPeLog = await AsyncStorage.getItem(PE_LOG_KEY);
 			if (retrievedPeLog) setPeLog(JSON.parse(retrievedPeLog));
 
-			// todo show splash screen until this is loaded
 			setLoaded(true);
 		})();
 	}, []);
