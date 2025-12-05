@@ -1,4 +1,4 @@
-import { DAY_MS, MAX_DAYS } from "@/constants/constants";
+import { MAX_DAYS } from "@/constants/consts";
 import { PE } from "@/hooks/useAppData";
 import {
 	cancelAllScheduledNotificationsAsync,
@@ -8,6 +8,7 @@ import {
 	scheduleNotificationAsync,
 } from "expo-notifications";
 import { Alert, Linking } from "react-native";
+import { DAY_MS } from "./time";
 
 async function scheduleNotifications(startDate: Date, peLog: PE[], hour: number, futureCycles: number) {
 	const currentDay = Math.floor((Date.now() - startDate.getTime()) / DAY_MS);

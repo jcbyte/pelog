@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
-import { MAX_DAYS } from "@/constants/constants";
+import { MAX_DAYS } from "@/constants/consts";
 import { rescheduleNotifications } from "@/tools/notifications";
 
 const PE_LOG_KEY = "peLog" as const;
