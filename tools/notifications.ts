@@ -13,7 +13,7 @@ import { DAY_MS } from "./time";
 interface NotificationSchedulingOptions {
 	startDate: Date;
 	peLog: PE[];
-	hour: number;
+	notificationTime: Date;
 	futureCycles?: number;
 }
 
@@ -23,7 +23,7 @@ async function scheduleNotifications(options: NotificationSchedulingOptions) {
 	const notificationSchedules: Promise<unknown>[] = [];
 	for (let i = 0; i < MAX_DAYS * (options.futureCycles ?? 4); i++) {
 		const triggerDate = new Date(options.startDate.getTime() + i * DAY_MS);
-		triggerDate.setHours(options.hour);
+		triggerDate.setHours(options.notificationTime.getHours(), options.notificationTime.getMinutes());
 		const thisDay = (currentDay + i) % MAX_DAYS;
 
 		notificationSchedules.push(
@@ -38,7 +38,7 @@ async function scheduleNotifications(options: NotificationSchedulingOptions) {
 	}
 
 	const triggerDate = new Date(options.startDate.getTime() + (MAX_DAYS - 1) * DAY_MS);
-	triggerDate.setHours(options.hour);
+	triggerDate.setHours(options.notificationTime.getHours(), options.notificationTime.getMinutes());
 	notificationSchedules.push(
 		scheduleNotificationAsync({
 			content: {

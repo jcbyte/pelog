@@ -49,8 +49,8 @@ export function useAppData() {
 	useEffect(() => {
 		if (!loaded) return;
 
-		rescheduleNotifications({ startDate, peLog, hour: 9 });
-	}, [startDate, peLog]);
+		rescheduleNotifications({ startDate, peLog, notificationTime });
+	}, [startDate, peLog, notificationTime]);
 
 	useEffect(() => {
 		if (!loaded) return;
@@ -60,7 +60,6 @@ export function useAppData() {
 	useEffect(() => {
 		if (!loaded) return;
 		AsyncStorage.setItem(NOTIFICATION_TIME_KEY, notificationTime.toISOString());
-		console.log(notificationTime);
 	}, [notificationTime]);
 
 	useEffect(() => {
