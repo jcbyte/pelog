@@ -39,7 +39,7 @@ export function useAppData() {
 	useEffect(() => {
 		if (!loaded) return;
 
-		rescheduleNotifications(startDate, peLog, 9);
+		rescheduleNotifications({ startDate, peLog, hour: 9 });
 	}, [startDate, peLog]);
 
 	useEffect(() => {

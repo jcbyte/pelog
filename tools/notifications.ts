@@ -10,28 +10,35 @@ import {
 import { Alert, Linking } from "react-native";
 import { DAY_MS } from "./time";
 
-async function scheduleNotifications(startDate: Date, peLog: PE[], hour: number, futureCycles: number) {
-	const currentDay = Math.floor((Date.now() - startDate.getTime()) / DAY_MS);
+interface NotificationSchedulingOptions {
+	startDate: Date;
+	peLog: PE[];
+	hour: number;
+	futureCycles?: number;
+}
+
+async function scheduleNotifications(options: NotificationSchedulingOptions) {
+	const currentDay = Math.floor((Date.now() - options.startDate.getTime()) / DAY_MS);
 
 	const notificationSchedules: Promise<unknown>[] = [];
-	for (let i = 0; i < MAX_DAYS * futureCycles; i++) {
-		const triggerDate = new Date(startDate.getTime() + i * DAY_MS);
-		triggerDate.setHours(hour);
+	for (let i = 0; i < MAX_DAYS * (options.futureCycles ?? 4); i++) {
+		const triggerDate = new Date(options.startDate.getTime() + i * DAY_MS);
+		triggerDate.setHours(options.hour);
 		const thisDay = (currentDay + i) % MAX_DAYS;
 
 		notificationSchedules.push(
 			scheduleNotificationAsync({
 				content: {
 					title: "PE Log",
-					body: `P=${peLog[thisDay].P}% E${peLog[thisDay].E}%`,
+					body: `P=${options.peLog[thisDay].P}% E${options.peLog[thisDay].E}%`,
 				},
 				trigger: { type: SchedulableTriggerInputTypes.DATE, date: triggerDate },
 			})
 		);
 	}
 
-	const triggerDate = new Date(startDate.getTime() + (MAX_DAYS - 1) * DAY_MS);
-	triggerDate.setHours(hour);
+	const triggerDate = new Date(options.startDate.getTime() + (MAX_DAYS - 1) * DAY_MS);
+	triggerDate.setHours(options.hour);
 	notificationSchedules.push(
 		scheduleNotificationAsync({
 			content: {
@@ -46,25 +53,29 @@ async function scheduleNotifications(startDate: Date, peLog: PE[], hour: number,
 }
 
 let rescheduling = false;
-let rescheduling_timeout: number;
-export async function rescheduleNotifications(startDate: Date, peLog: PE[], hour: number, futureCycles: number = 4) {
+let pending_reschedule: NotificationSchedulingOptions | null = null;
+
+export async function rescheduleNotifications(options: NotificationSchedulingOptions) {
 	// call the function immediately, however if currently rescheduling
 	// we let it finish before calling with the new data; however, if
 	// multiple reschedule calls come in only the last will be fired
 
-	if (rescheduling_timeout) clearTimeout(rescheduling_timeout);
 	if (rescheduling) {
-		rescheduling_timeout = setTimeout(() => {
-			rescheduleNotifications(startDate, peLog, hour, futureCycles);
-		}, 500);
+		pending_reschedule = options;
 		return;
 	}
 
 	rescheduling = true;
-	console.log("rescheduling");
+	console.log("Rescheduling");
 	await cancelAllScheduledNotificationsAsync();
-	await scheduleNotifications(startDate, peLog, hour, futureCycles);
+	await scheduleNotifications(options);
 	rescheduling = false;
+
+	if (pending_reschedule) {
+		const next_call = { ...pending_reschedule };
+		pending_reschedule = null;
+		rescheduleNotifications(next_call);
+	}
 }
 
 export async function requestNotificationPermission() {
