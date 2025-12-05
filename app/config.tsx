@@ -1,14 +1,26 @@
-import { Colours } from "@/constants/constants";
+import { Colours } from "@/constants/theme";
 import { useAppData } from "@/hooks/useAppData";
+import { getCurrentDay } from "@/tools/time";
 import { useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import { useState } from "react";
-import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+	KeyboardAvoidingView,
+	Modal,
+	Platform,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View,
+} from "react-native";
 
 export default function ConfigPage() {
 	const router = useRouter();
 
-	const { peLog, setPeLog } = useAppData();
+	const { startDate, peLog, setPeLog } = useAppData();
+	const currentDay = getCurrentDay(startDate);
 	const [selectedDay, setSelectedDay] = useState<number | null>(null);
 	const [drawerP, setDrawerP] = useState<string>("");
 	const [drawerE, setDrawerE] = useState<string>("");
@@ -42,7 +54,11 @@ export default function ConfigPage() {
 				<View style={styles.dayGrid}>
 					{peLog.map((pe, day) => {
 						return (
-							<TouchableOpacity key={day} onPress={() => openDrawer(day)} style={styles.dayButton}>
+							<TouchableOpacity
+								key={day}
+								onPress={() => openDrawer(day)}
+								style={{ ...styles.dayButton, ...(day === currentDay ? styles.todayDayButton : {}) }}
+							>
 								<Text style={styles.dayText}>{day + 1}</Text>
 								<Text style={styles.dayConfigText}>P={pe.P}%</Text>
 								<Text style={styles.dayConfigText}>E={pe.E}%</Text>
@@ -53,51 +69,53 @@ export default function ConfigPage() {
 			</ScrollView>
 
 			<Modal visible={selectedDay !== null} animationType="slide" transparent={true} onRequestClose={closeDrawer}>
-				<View style={styles.modalOverlay}>
-					<View style={styles.drawerContent}>
-						<View style={styles.drawerHeader}>
-							<Text style={styles.drawerTitle}>Day {selectedDay}</Text>
-							<Text style={styles.drawerDescription}>Set P and E values for this day</Text>
-						</View>
-
-						<View style={styles.drawerBody}>
-							<View style={styles.inputGroup}>
-								<Text style={styles.inputLabel}>P Value (%)</Text>
-								<TextInput
-									style={styles.input}
-									placeholderTextColor={Colours.muted}
-									keyboardType="numeric"
-									value={drawerP}
-									onChangeText={(text) => setDrawerP(text)}
-									textAlign="center"
-									placeholder="0"
-								/>
+				<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+					<View style={styles.modalOverlay}>
+						<View style={styles.drawerContent}>
+							<View style={styles.drawerHeader}>
+								<Text style={styles.drawerTitle}>Day {selectedDay}</Text>
+								<Text style={styles.drawerDescription}>Set P and E values for this day</Text>
 							</View>
 
-							<View style={styles.inputGroup}>
-								<Text style={styles.inputLabel}>E Value (%)</Text>
-								<TextInput
-									style={styles.input}
-									placeholderTextColor={Colours.muted}
-									keyboardType="numeric"
-									value={drawerE}
-									onChangeText={(text) => setDrawerE(text)}
-									textAlign="center"
-									placeholder="0"
-								/>
-							</View>
-						</View>
+							<View style={styles.drawerBody}>
+								<View style={styles.inputGroup}>
+									<Text style={styles.inputLabel}>P Value (%)</Text>
+									<TextInput
+										style={styles.input}
+										placeholderTextColor={Colours.muted}
+										keyboardType="numeric"
+										value={drawerP}
+										onChangeText={(text) => setDrawerP(text)}
+										textAlign="center"
+										placeholder="0"
+									/>
+								</View>
 
-						<View style={styles.drawerFooter}>
-							<TouchableOpacity style={styles.primaryButton} onPress={savePe}>
-								<Text style={styles.primaryButtonText}>Save Day {selectedDay}</Text>
-							</TouchableOpacity>
-							<TouchableOpacity style={styles.cancelButton} onPress={closeDrawer}>
-								<Text style={styles.cancelButtonText}>Cancel</Text>
-							</TouchableOpacity>
+								<View style={styles.inputGroup}>
+									<Text style={styles.inputLabel}>E Value (%)</Text>
+									<TextInput
+										style={styles.input}
+										placeholderTextColor={Colours.muted}
+										keyboardType="numeric"
+										value={drawerE}
+										onChangeText={(text) => setDrawerE(text)}
+										textAlign="center"
+										placeholder="0"
+									/>
+								</View>
+							</View>
+
+							<View style={styles.drawerFooter}>
+								<TouchableOpacity style={styles.primaryButton} onPress={savePe}>
+									<Text style={styles.primaryButtonText}>Save Day {selectedDay}</Text>
+								</TouchableOpacity>
+								<TouchableOpacity style={styles.cancelButton} onPress={closeDrawer}>
+									<Text style={styles.cancelButtonText}>Cancel</Text>
+								</TouchableOpacity>
+							</View>
 						</View>
 					</View>
-				</View>
+				</KeyboardAvoidingView>
 			</Modal>
 		</View>
 	);
@@ -145,6 +163,9 @@ const styles = StyleSheet.create({
 		borderColor: Colours.divider,
 		alignItems: "center",
 		justifyContent: "center",
+	},
+	todayDayButton: {
+		borderColor: Colours.primary,
 	},
 	dayText: {
 		fontSize: 18,

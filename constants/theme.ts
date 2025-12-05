@@ -1,7 +1,5 @@
 import { Platform } from "react-native";
 
-export const MAX_DAYS = 28 as const;
-
 export const Colours = {
 	// Base styles
 	background: "#1e1e1e",
@@ -41,5 +39,3 @@ export const Fonts = Platform.select({
 		mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
 	},
 });
-
-export const DAY_MS = 86400000 as const; // 1000 * 60 * 60 * 24
