@@ -1,4 +1,4 @@
-import { Colours } from "@/constants/constants";
+import { Colours } from "@/constants/theme";
 import { useAppData } from "@/hooks/useAppData";
 import { requestNotificationPermission } from "@/tools/notifications";
 import { Stack } from "expo-router";
@@ -6,7 +6,7 @@ import { hide as hideSplashScreen, preventAutoHideAsync as preventAutoHideSplash
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 preventAutoHideSplashScreenAsync();
 
@@ -25,10 +25,12 @@ export default function App() {
 		<>
 			<StatusBar style="light" />
 			<SafeAreaProvider>
-				<Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colours.background } }}>
-					<Stack.Screen name="index" />
-					<Stack.Screen name="config" />
-				</Stack>
+				<SafeAreaView style={{ flex: 1, backgroundColor: Colours.background }}>
+					<Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colours.background } }}>
+						<Stack.Screen name="index" />
+						<Stack.Screen name="config" />
+					</Stack>
+				</SafeAreaView>
 			</SafeAreaProvider>
 		</>
 	);
