@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import { MAX_DAYS } from "@/constants/consts";
 import { rescheduleNotifications } from "@/tools/notifications";
+import { strippedTime } from "@/tools/time";
 
 const START_DATE_KEY = "startDate" as const;
 const NOTIFICATION_TIME_KEY = "notificationTime" as const;
@@ -14,8 +15,8 @@ export interface PE {
 }
 
 export function useAppData() {
-	const [startDate, setStartDate] = useState<Date>(new Date(0));
-	const [notificationTime, setNotificationTime] = useState<Date>(new Date(0));
+	const [startDate, setStartDate] = useState<Date>(strippedTime(new Date()));
+	const [notificationTime, setNotificationTime] = useState<Date>(new Date("1970-01-01T09:00:00.000Z"));
 	const [peLog, setPeLog] = useState<PE[]>(Array(MAX_DAYS).fill({ P: 0, E: 0 }));
 	const [loaded, setLoaded] = useState<boolean>(false);
 

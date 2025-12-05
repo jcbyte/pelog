@@ -1,7 +1,7 @@
 import { MAX_DAYS } from "@/constants/consts";
 import { Colours } from "@/constants/theme";
 import { useAppData } from "@/hooks/useAppData";
-import { DAY_MS, getCurrentDay } from "@/tools/time";
+import { DAY_MS, getCurrentDay, strippedTime } from "@/tools/time";
 import { useRouter } from "expo-router";
 import { AlarmClock, CalendarCog, Minus, Plus, RotateCcw } from "lucide-react-native";
 import React, { useState } from "react";
@@ -21,7 +21,7 @@ export default function CounterPage() {
 	function increment() {
 		if (currentDay < 28) {
 			setStartDate((prev) => {
-				return new Date(prev.getTime() - DAY_MS);
+				return strippedTime(new Date(prev.getTime() - DAY_MS));
 			});
 		}
 	}
@@ -29,16 +29,14 @@ export default function CounterPage() {
 	function decrement() {
 		if (currentDay > 1) {
 			setStartDate((prev) => {
-				return new Date(prev.getTime() + DAY_MS);
+				return strippedTime(new Date(prev.getTime() + DAY_MS));
 			});
 		}
 	}
 
 	function reset() {
 		setStartDate((prev) => {
-			const today = new Date();
-			today.setHours(0, 0, 0, 0);
-			return today;
+			return strippedTime(new Date());
 		});
 	}
 
