@@ -13,25 +13,25 @@ export default function CounterPage() {
 	const router = useRouter();
 
 	const { startDate, setStartDate, notificationTime, setNotificationTime } = useAppData();
-	const currentDay = getCurrentDay(startDate) + 1;
+	const currentDay = getCurrentDay(startDate);
 
 	const [timePickerDate, setTimePickerDate] = useState<Date>(new Date());
 	const [timePickerShown, setTimePickerShown] = useState<boolean>(false);
 
 	function increment() {
-		if (currentDay < 28) {
-			setStartDate((prev) => {
-				return strippedTime(new Date(prev.getTime() - DAY_MS));
-			});
-		}
+		if (currentDay >= 28) return;
+
+		setStartDate((prev) => {
+			return strippedTime(new Date(prev.getTime() - DAY_MS));
+		});
 	}
 
 	function decrement() {
-		if (currentDay > 1) {
-			setStartDate((prev) => {
-				return strippedTime(new Date(prev.getTime() + DAY_MS));
-			});
-		}
+		if (currentDay < 0) return;
+
+		setStartDate((prev) => {
+			return strippedTime(new Date(prev.getTime() + DAY_MS));
+		});
 	}
 
 	function reset() {
@@ -69,15 +69,15 @@ export default function CounterPage() {
 			<View style={styles.main}>
 				<View style={styles.dayContainer}>
 					<Text style={styles.dayLabel}>Current Day</Text>
-					<Text style={styles.dayCount}>{currentDay}</Text>
+					<Text style={styles.dayCount}>{currentDay + 1}</Text>
 					<Text style={styles.dayLimit}>of {MAX_DAYS}</Text>
 				</View>
 
 				<View style={styles.buttonRow}>
 					<TouchableOpacity
 						onPress={decrement}
-						disabled={currentDay <= 1}
-						style={[styles.buttonBase, styles.prevButton, currentDay <= 1 && styles.buttonDisabled]}
+						disabled={currentDay <= 0}
+						style={[styles.buttonBase, styles.prevButton, currentDay <= 0 && styles.buttonDisabled]}
 					>
 						<Minus color={currentDay <= 1 ? Colours.muted : Colours.text} size={24} />
 						<Text style={[styles.buttonText, { color: currentDay <= 1 ? Colours.muted : Colours.text }]}>Previous</Text>
@@ -85,10 +85,10 @@ export default function CounterPage() {
 
 					<TouchableOpacity
 						onPress={increment}
-						disabled={currentDay >= MAX_DAYS}
-						style={[styles.buttonBase, styles.nextButton, currentDay >= MAX_DAYS && styles.buttonDisabled]}
+						disabled={currentDay >= MAX_DAYS - 1}
+						style={[styles.buttonBase, styles.nextButton, currentDay >= MAX_DAYS - 1 && styles.buttonDisabled]}
 					>
-						<Text style={[styles.buttonText, { color: currentDay >= MAX_DAYS ? Colours.muted : Colours.text }]}>
+						<Text style={[styles.buttonText, { color: currentDay >= MAX_DAYS - 1 ? Colours.muted : Colours.text }]}>
 							Next
 						</Text>
 						<Plus color={currentDay >= MAX_DAYS ? Colours.muted : Colours.text} size={24} />

@@ -20,13 +20,15 @@ interface NotificationSchedulingOptions {
 }
 
 async function scheduleNotifications(options: NotificationSchedulingOptions) {
-	const currentDay = Math.floor((Date.now() - options.startDate.getTime()) / DAY_MS);
+	const now = new Date();
 
 	const notificationSchedules: Promise<unknown>[] = [];
 	for (let i = 0; i < MAX_DAYS * (options.futureCycles ?? DEFAULT_FUTURE_CYCLES); i++) {
 		const triggerDate = new Date(options.startDate.getTime() + i * DAY_MS);
 		triggerDate.setHours(options.notificationTime.getHours(), options.notificationTime.getMinutes());
-		const thisDay = (currentDay + i) % MAX_DAYS;
+		const thisDay = i % MAX_DAYS;
+
+		if (triggerDate < now) continue;
 
 		notificationSchedules.push(
 			scheduleNotificationAsync({

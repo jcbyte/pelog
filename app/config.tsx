@@ -73,7 +73,7 @@ export default function ConfigPage() {
 					<View style={styles.modalOverlay}>
 						<View style={styles.drawerContent}>
 							<View style={styles.drawerHeader}>
-								<Text style={styles.drawerTitle}>Day {selectedDay}</Text>
+								<Text style={styles.drawerTitle}>Day {selectedDay! + 1}</Text>
 								<Text style={styles.drawerDescription}>Set P and E values for this day</Text>
 							</View>
 
