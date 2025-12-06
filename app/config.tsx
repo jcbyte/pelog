@@ -36,7 +36,7 @@ export default function ConfigPage() {
 	}
 
 	function savePe() {
-		if (!selectedDay) return;
+		if (selectedDay === null) return;
 		setPeLog(selectedDay, { P: Number(drawerP), E: Number(drawerE) });
 		closeDrawer();
 	}
@@ -107,7 +107,7 @@ export default function ConfigPage() {
 
 							<View style={styles.drawerFooter}>
 								<TouchableOpacity style={styles.primaryButton} onPress={savePe}>
-									<Text style={styles.primaryButtonText}>Save Day {selectedDay}</Text>
+									<Text style={styles.primaryButtonText}>Save Day {selectedDay! + 1}</Text>
 								</TouchableOpacity>
 								<TouchableOpacity style={styles.cancelButton} onPress={closeDrawer}>
 									<Text style={styles.cancelButtonText}>Cancel</Text>
