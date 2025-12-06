@@ -102,7 +102,13 @@ export default function CounterPage() {
 			</View>
 
 			{timePickerShown && (
-				<DateTimePicker value={timePickerDate} mode="time" is24Hour={false} onChange={confirmNotificationTime} />
+				<DateTimePicker
+					value={timePickerDate}
+					mode="time"
+					is24Hour={false}
+					onChange={confirmNotificationTime}
+					timeZoneName="UTC"
+				/>
 			)}
 		</View>
 	);

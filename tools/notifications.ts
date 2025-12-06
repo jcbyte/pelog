@@ -10,6 +10,8 @@ import {
 import { Alert, Linking } from "react-native";
 import { DAY_MS } from "./time";
 
+const DEFAULT_FUTURE_CYCLES = 2 as const;
+
 interface NotificationSchedulingOptions {
 	startDate: Date;
 	peLog: PE[];
@@ -21,7 +23,7 @@ async function scheduleNotifications(options: NotificationSchedulingOptions) {
 	const currentDay = Math.floor((Date.now() - options.startDate.getTime()) / DAY_MS);
 
 	const notificationSchedules: Promise<unknown>[] = [];
-	for (let i = 0; i < MAX_DAYS * (options.futureCycles ?? 4); i++) {
+	for (let i = 0; i < MAX_DAYS * (options.futureCycles ?? DEFAULT_FUTURE_CYCLES); i++) {
 		const triggerDate = new Date(options.startDate.getTime() + i * DAY_MS);
 		triggerDate.setHours(options.notificationTime.getHours(), options.notificationTime.getMinutes());
 		const thisDay = (currentDay + i) % MAX_DAYS;
@@ -29,8 +31,8 @@ async function scheduleNotifications(options: NotificationSchedulingOptions) {
 		notificationSchedules.push(
 			scheduleNotificationAsync({
 				content: {
-					title: "PE Log",
-					body: `P=${options.peLog[thisDay].P}% E${options.peLog[thisDay].E}%`,
+					title: `PE Log - Day ${thisDay + 1}`,
+					body: `P: ${options.peLog[thisDay].P}% | E: ${options.peLog[thisDay].E}%`,
 				},
 				trigger: { type: SchedulableTriggerInputTypes.DATE, date: triggerDate },
 			})
@@ -43,7 +45,7 @@ async function scheduleNotifications(options: NotificationSchedulingOptions) {
 		scheduleNotificationAsync({
 			content: {
 				title: "PE Log",
-				body: "Reopen the app to continue receiving notifications",
+				body: "Reopen the app to continue receiving notifications!",
 			},
 			trigger: { type: SchedulableTriggerInputTypes.DATE, date: triggerDate },
 		})
@@ -89,5 +91,6 @@ export async function requestNotificationPermission() {
 			{ text: "Cancel" },
 			{ text: "Open Settings", onPress: () => Linking.openSettings() },
 		]);
+		return;
 	}
 }
